@@ -1,10 +1,10 @@
 .kb-injector-header-space::after {
   content: "";
   display: block;
-  width: 120px; /* 画像の幅 */
-  height: 120px; /* 画像の高さ */
-  margin-top: 12px; /* 上との余白 */
-  background-image: url("https://fukufukuyama-petsougi.com/wp-content/uploads/2025/10/IMG_5417.jpg"); /* 画像URLをここに */
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9; /* 画像の縦横比に合わせて調整 */
+  background-image: url("https://fukufukuyama-petsougi.com/wp-content/uploads/2025/11/刻印カプセルフォントとオーダー例.jpg");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;

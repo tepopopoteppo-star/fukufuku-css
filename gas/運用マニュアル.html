@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ペット供養祭 メモリアルスライド 運用マニュアル</title>
+<style>
+  :root{
+    --main:#3D2B1F; --sub:#7A6352; --accent:#C4AA8F; --bg:#FBF8F3;
+    --panel:#F5F0E8; --line:#E3D8C8; --warn:#B5532F; --ok:#3C7A4E; --info:#3E6B9E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+    color:var(--main); background:var(--bg); line-height:1.8;
+    margin:0; padding:0 16px 80px;
+  }
+  .wrap{max-width:880px; margin:0 auto;}
+  header.title{
+    text-align:center; padding:40px 20px 28px; border-bottom:3px solid var(--accent); margin-bottom:8px;
+  }
+  header.title h1{font-size:1.8rem; margin:0 0 6px;}
+  header.title .sub{color:var(--sub); font-size:.95rem;}
+  h2{
+    font-size:1.3rem; margin:40px 0 14px; padding:8px 14px;
+    background:var(--main); color:#fff; border-radius:6px;
+  }
+  h3{font-size:1.08rem; margin:24px 0 8px; color:var(--main); border-left:5px solid var(--accent); padding-left:10px;}
+  p{margin:8px 0;}
+  a{color:var(--info);}
+  code{
+    background:#efe7da; padding:2px 6px; border-radius:4px; font-size:.9em;
+    font-family:"SFMono-Regular",Consolas,Menlo,monospace; color:#6b4a2f;
+  }
+  table{border-collapse:collapse; width:100%; margin:12px 0; background:#fff; font-size:.95rem;}
+  th,td{border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top;}
+  th{background:var(--panel);}
+  ul,ol{margin:8px 0 8px 4px; padding-left:22px;}
+  li{margin:5px 0;}
+  .box{border-radius:8px; padding:14px 18px; margin:16px 0;}
+  .box .label{font-weight:bold; display:block; margin-bottom:4px;}
+  .principle{background:#fff7ef; border:2px solid var(--warn);}
+  .warn{background:#fdeee9; border-left:6px solid var(--warn);}
+  .ok{background:#eef7f0; border-left:6px solid var(--ok);}
+  .info{background:#eef3fa; border-left:6px solid var(--info);}
+  .flow{
+    background:#fff; border:1px solid var(--line); border-radius:8px; padding:16px;
+    font-family:monospace; white-space:pre; overflow-x:auto; line-height:1.5; font-size:.85rem;
+  }
+  .check li{list-style:none; position:relative; padding-left:30px; margin:8px 0;}
+  .check li::before{
+    content:""; position:absolute; left:0; top:3px; width:18px; height:18px;
+    border:2px solid var(--accent); border-radius:4px;
+  }
+  .toc{background:#fff; border:1px solid var(--line); border-radius:8px; padding:14px 22px; margin:18px 0;}
+  .toc ol{columns:2; -webkit-columns:2;}
+  .toc a{text-decoration:none;}
+  .updated{color:var(--sub); font-size:.85rem; text-align:right; margin-top:6px;}
+  @media print{
+    body{background:#fff; padding:0;}
+    h2{background:#444 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .box,table,th{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    a{color:var(--main);}
+  }
+  @media (max-width:600px){ .toc ol{columns:1;} header.title h1{font-size:1.4rem;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="title">
+  <h1>ペット供養祭 メモリアルスライド 運用マニュアル</h1>
+  <div class="sub">Googleフォーム → スライド自動生成 ＆ スタッフ共有サマリー</div>
+  <div class="updated">最終更新: 2026-06-11</div>
+</header>
+
+<div class="box principle">
+  <span class="label">⭐ 最重要の大原則</span>
+  <strong>「回答スプレッドシート」が、すべての元データ（源泉）です。</strong><br>
+  スライドは <code>rebuildAllSlides</code> を実行するたびに、シートの内容から<strong>毎回作り直されます</strong>。
+  そのため <strong>スライドを手で直接編集しても、次に作り直すと消えます。</strong><br>
+  ✅ 名前・写真・参加部などを直すときは、<strong>必ずスプレッドシート側を編集</strong>してから作り直してください。
+</div>
+
+<div class="toc">
+  <strong>目次</strong>
+  <ol>
+    <li><a href="#sys">システム全体像</a></li>
+    <li><a href="#ids">リンク・ID 一覧</a></li>
+    <li><a href="#play">当日のスライド操作</a></li>
+    <li><a href="#ops">よくある運用作業</a></li>
+    <li><a href="#rebuild">スライドの最新化</a></li>
+    <li><a href="#summary">スタッフ共有サマリー</a></li>
+    <li><a href="#funcs">関数一覧</a></li>
+    <li><a href="#trouble">トラブル時の確認</a></li>
+    <li><a href="#config">設定変更（コード編集）</a></li>
+    <li><a href="#donts">やってはいけないこと</a></li>
+    <li><a href="#checklist">本番前チェックリスト</a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<h2 id="sys">1. システム全体像</h2>
+<div class="flow">お客様
+  │ Googleフォームで申込
+  ▼
+Googleフォーム ──→ 回答スプレッドシート（元データ）
+                          │
+            ┌─────────────┼──────────────┐
+            │ ① 申込ごとに自動            │ ② 本番前に手動
+            │   (onFormSubmit)            │   (rebuildAllSlides)
+            ▼                             ▼
+   確認メール送信・定員チェック    Apps Script（プログラム）
+   スタッフサマリー更新                  │ 参加部で自動振り分け
+                          ┌──────────────┼──────────────┐
+                          ▼              ▼              ▼
+                    第1部スライド    第2部スライド    第3部スライド
+                  （表紙+ペット+締め）    （同左）         （同左）</div>
+<ul>
+  <li>各スライドファイルの構成: <strong>表紙 → その部のペット紹介 → 締めの言葉</strong></li>
+  <li>ペットは申込の「参加希望時刻（第◯部）」を見て、<strong>自動で正しいファイルに入ります</strong>。</li>
+</ul>
+
+<!-- 2 -->
+<h2 id="ids">2. リンク・ID 一覧</h2>
+<table>
+  <tr><th>項目</th><th>ID / 場所</th></tr>
+  <tr><td>回答スプレッドシート</td><td><code>1EWZeJxLKgoXCZzpBsQ2ny4HxTEbm6P6ucm6awkzYt4A</code></td></tr>
+  <tr><td>Googleフォーム</td><td><code>1aby0FmzfKXSIbPiaNtc-n-bY1ae3s6yZEHF5h0yc4ps</code></td></tr>
+  <tr><td>第1部 スライド</td><td><code>1EVy_prP1oQ4E662ZqHN4uVOGHp4cNFnr5sxLaHIyTZ4</code></td></tr>
+  <tr><td>第2部 スライド</td><td><code>1otLErQosb2nll2DpoapiWGdZTKcLhs6R6tFgRYt0XYw</code></td></tr>
+  <tr><td>第3部 スライド</td><td><code>1BD940lq5Amj-koji94vBfsM10foituDKzZ_jDePHVOs</code></td></tr>
+  <tr><td>背景画像</td><td><code>1gJnoHW6M6mRaFN7WU2uX2X3eTdhlae1J</code></td></tr>
+  <tr><td>スタッフ共有サマリー</td><td>「スタッフ共有_ペット供養祭_申込状況」（updateStaffSummary が自動作成）</td></tr>
+  <tr><td>プログラム</td><td>スプレッドシート → 拡張機能 → Apps Script</td></tr>
+</table>
+<p class="updated">スライドを開くURL: <code>https://docs.google.com/presentation/d/（上のID）/edit</code></p>
+
+<!-- 3 -->
+<h2 id="play">3. 当日のスライド操作方法（再生）</h2>
+<p>各部の開始時刻になったら、<strong>その部のスライドファイル</strong>を開いて再生します。</p>
+<h3>再生の手順</h3>
+<ol>
+  <li>該当する部のスライドファイルを開く</li>
+  <li>右上の <strong>「スライドショー」</strong> を押して全画面再生</li>
+  <li>マウスを軽く動かす → 画面<strong>左下のツールバー</strong>が出る</li>
+  <li><strong>「⋮」(その他)</strong> → <strong>「自動再生」</strong> で送り間隔（例:5〜10秒）、<strong>「ループ」</strong>にチェック</li>
+</ol>
+<h3>音楽について</h3>
+<ul>
+  <li>音楽は各ファイルの<strong>表紙（1枚目）</strong>に設定します（自動再生・ループ）。</li>
+  <li>再生を始めれば自動で流れ、スライドを送っても止まりません。</li>
+  <li>音が出ないとき:ブラウザ音量・PC音量・表紙のスピーカー設定（書式設定オプション→自動再生）を確認。</li>
+</ul>
+<div class="box ok">
+  <span class="label">✅ より安定させたいとき</span>
+  <strong>ファイル → 共有 → ウェブに公開</strong> で「○秒ごとに切替＋ループ」を設定し、出てきたリンクを開いて全画面にすると、操作不要で流しっぱなしにできます。
+</div>
+
+<!-- 4 -->
+<h2 id="ops">4. よくある運用作業</h2>
+
+<h3>4-1. 📷 お客様の写真を差し替えたい</h3>
+<p><strong>【推奨・恒久的】スプレッドシートを直す</strong></p>
+<ol>
+  <li>新しい写真を <strong>Googleドライブにアップロード</strong></li>
+  <li>その写真を開き、URLの <code>…/d/</code> と <code>/view</code> の間が<strong>ファイルID</strong></li>
+  <li>回答スプレッドシートで<strong>該当お客様の行</strong>を探す</li>
+  <li><strong>「ペットちゃんのお写真…」列</strong>のセルを新URLに書き換える<br>
+      形式: <code>https://drive.google.com/open?id=（新ファイルID）</code>（複数はカンマ区切り・先頭1枚を使用）</li>
+  <li>写真ファイルの共有を、少なくとも<strong>運用アカウントが見られる状態</strong>に（同じアカウントのドライブ内なら問題なし）</li>
+  <li><strong><code>rebuildAllSlides</code> を実行</strong>して作り直す</li>
+</ol>
+<div class="box warn">
+  <span class="label">⚠️ 当日限りの応急処置</span>
+  スライド上の写真を右クリック →「画像を置き換える」でも差し替え可。ただし<strong>次に <code>rebuildAllSlides</code> を実行すると元に戻ります。</strong>
+</div>
+
+<h3>4-2. 🔀 お客様の「部（参加時刻）」が変更になった</h3>
+<ol>
+  <li>回答スプレッドシートで<strong>該当行</strong>を探す</li>
+  <li><strong>「参加希望時刻」列</strong>のセルを新しい部に書き換える（「<strong>第2部</strong>」のように <strong>第◯部</strong> が入っていれば自動判定）</li>
+  <li><strong><code>rebuildAllSlides</code> を実行</strong> → そのペットは<strong>自動で正しい部のファイルへ移動</strong>します</li>
+</ol>
+
+<h3>4-3. ✏️ 名前・ふりがな・メッセージを直したい</h3>
+<ol>
+  <li>スプレッドシートの該当セルを書き換える</li>
+  <li><code>rebuildAllSlides</code> を実行</li>
+</ol>
+
+<h3>4-4. ❌ 申込がキャンセルになった</h3>
+<ol>
+  <li>スプレッドシートで<strong>該当行をまるごと削除</strong>（行番号を右クリック→削除）</li>
+  <li><code>rebuildAllSlides</code> を実行 → スライドが消えます</li>
+</ol>
+
+<!-- 5 -->
+<h2 id="rebuild">5. スライドを最新化する（rebuildAllSlides）</h2>
+<p><strong>いつ実行する？</strong> → スプレッドシートを編集したあと／本番直前に。</p>
+<h3>手順</h3>
+<ol>
+  <li>スプレッドシート → <strong>拡張機能 → Apps Script</strong></li>
+  <li>上部の関数プルダウンで <strong><code>rebuildAllSlides</code></strong> を選ぶ</li>
+  <li><strong>▶ 実行</strong></li>
+  <li>3つのスライドファイルを開いて並び・内容を確認</li>
+</ol>
+<div class="box info">
+  <span class="label">ℹ️ 何が起きるか</span>
+  3ファイルそれぞれで<strong>表紙以外を消して、シートの最新内容で作り直し</strong>ます。各部のペットは第◯部の順に並び、末尾に<strong>締めスライド</strong>が付きます。<br>
+  表紙（音楽含む）は残り、自動送り・ウェブ公開の設定もファイルごとに保持されます。
+</div>
+
+<!-- 6 -->
+<h2 id="summary">6. スタッフ共有サマリー（申込状況の共有）</h2>
+<p>申込状況を<strong>スタッフに見せたいが編集はさせたくない</strong>ためのしくみです。元の回答シートは共有せず、<strong>専用の閲覧用ファイル</strong>を使います。</p>
+
+<h3>6-1. サマリーを作る・更新する</h3>
+<ol>
+  <li>Apps Script で <strong><code>updateStaffSummary</code></strong> を実行</li>
+  <li>初回は<strong>新しいファイル</strong>「スタッフ共有_ペット供養祭_申込状況」が自動作成され、実行ログにURLが出る</li>
+  <li>申込が増えたら<strong>再実行で最新化</strong>（onFormSubmit に組み込めば申込ごとに自動更新）</li>
+</ol>
+
+<h3>6-2. サマリーの場所</h3>
+<table>
+  <tr><th>探し方</th><th>方法</th></tr>
+  <tr><td>初回</td><td><code>updateStaffSummary</code> の実行ログに出る「★…URL」を開く</td></tr>
+  <tr><td>2回目以降</td><td><a href="https://drive.google.com">ドライブ</a>で「スタッフ共有」と検索／「最近使用したアイテム」</td></tr>
+</table>
+
+<h3>6-3. スタッフへ共有（重要）</h3>
+<ol>
+  <li>サマリーファイルの右上 <strong>「共有」</strong></li>
+  <li>スタッフのメールアドレスを追加 → 権限を <strong>「閲覧者」</strong> に</li>
+</ol>
+<div class="box warn">
+  <span class="label">⚠️ 個人情報の取り扱い</span>
+  一覧には<strong>電話番号が含まれます</strong>（メール・住所は除外済み）。<strong>「リンクを知っている全員」ではなく、スタッフのアカウントを個別指定</strong>で共有してください。
+</div>
+
+<h3>6-4. サマリーの中身（イメージ）</h3>
+<div class="flow">■ 申込集計   更新: 2026/06/11 09:30
+部       申込件数  参加人数  定員  残席
+第1部      12      28      80    52
+第2部       9      20      80    60
+第3部      15      33      80    47
+
+■ 申込一覧（電話番号含む・取扱注意）
+
+【第1部】   12件 / 28名
+部  代表者  ペット名  ふりがな  人数  納骨希望  電話  メッセージ
+…（第1部の申込者だけ）…
+
+【第2部】   9件 / 20名
+…（第2部の申込者だけ）…
+
+【第3部】   15件 / 33名
+…（第3部の申込者だけ）…</div>
+<p>一覧は<strong>部ごとのブロック</strong>に分かれ、各ブロック先頭に件数・人数が出ます。</p>
+
+<!-- 7 -->
+<h2 id="funcs">7. Apps Script の関数一覧</h2>
+<table>
+  <tr><th>関数名</th><th>いつ使う</th><th>何をする</th></tr>
+  <tr><td><code>rebuildAllSlides</code></td><td>本番前・データ修正後</td><td>3ファイルを最新データで作り直す（<strong>主役</strong>）</td></tr>
+  <tr><td><code>updateStaffSummary</code></td><td>申込状況を共有・更新したいとき</td><td>スタッフ共有サマリーを作成・更新</td></tr>
+  <tr><td><code>diagnoseLatestResponse</code></td><td>写真が出ない等のトラブル時</td><td>最新申込の列・写真・ドライブ権限を診断</td></tr>
+  <tr><td><code>generateSampleSlides</code></td><td>動作テスト</td><td>サンプル5件を各部ファイルに振り分けて生成</td></tr>
+  <tr><td><code>insertTitleSlide</code></td><td>表紙を作り直すとき</td><td>表紙（虹デザイン）を入れる</td></tr>
+  <tr><td><code>insertClosingSlide</code></td><td>締めだけ入れ直すとき</td><td>締めスライドを末尾に追加</td></tr>
+  <tr><td><code>onFormSubmit</code></td><td>（自動・触らない）</td><td>申込ごとに自動実行:確認メール＋スライド追加＋サマリー更新</td></tr>
+</table>
+<div class="box warn">
+  <span class="label">⚠️ 注意</span>
+  <code>onFormSubmit</code> は<strong>フォーム送信トリガーで自動的に動きます</strong>。手動実行しないでください（エラーになります）。
+</div>
+
+<!-- 8 -->
+<h2 id="trouble">8. トラブル時の確認</h2>
+<h3>写真が表示されない</h3>
+<ol>
+  <li><code>diagnoseLatestResponse</code> を実行 → 実行ログを見る</li>
+  <li>確認:<code>写真 idx=</code> が正しい列か／<code>✓ DriveApp OK</code> が出るか／写真ファイルの共有設定</li>
+</ol>
+<h3>並び順がおかしい／古い内容のまま</h3>
+<p>→ <code>rebuildAllSlides</code> の実行忘れがないか確認（編集はシート→作り直しで反映）</p>
+<h3>名前やメッセージの列がずれた（フォーム項目を足した後など）</h3>
+<p>通常は自動で吸収します。ずれたら <code>diagnoseLatestResponse</code> で列対応を確認。見出しの言い回しが大きく変わった場合は <code>COLUMN_KEYS</code> の調整（開発者対応）。</p>
+<h3>確認メールが届かない／定員が効かない</h3>
+<p><code>SESSIONS</code> の各部が、フォーム選択肢と<strong>「第◯部」レベルで一致</strong>しているか確認。</p>
+<h3>サマリーが見当たらない</h3>
+<p>ドライブで「スタッフ共有」と検索。まだ無ければ <code>updateStaffSummary</code> を実行すると作られます。</p>
+
+<!-- 9 -->
+<h2 id="config">9. 設定変更（コード編集＝開発者向け）</h2>
+<p>スプレッドシート操作では完結せず、Apps Script の<strong>コード編集</strong>が必要な作業です。</p>
+<table>
+  <tr><th>やりたいこと</th><th>変更箇所</th></tr>
+  <tr><td>部の追加・削除・時間変更</td><td><code>SESSIONS</code> と <code>SLIDE_IDS</code>（部を増やすならスライドファイルも新規作成しID追加）</td></tr>
+  <tr><td>定員・アラート人数</td><td><code>SESSIONS</code> の <code>capacity</code> / <code>alert</code></td></tr>
+  <tr><td>背景画像</td><td><code>BG_IMAGE_ID</code> を新ファイルIDに → <code>rebuildAllSlides</code></td></tr>
+  <tr><td>締めの言葉・表紙</td><td><code>insertClosingSlide</code> / <code>insertTitleSlide</code> 内のテキスト</td></tr>
+  <tr><td>サマリーの項目</td><td><code>updateStaffSummary</code> の列定義</td></tr>
+</table>
+
+<!-- 10 -->
+<h2 id="donts">10. ⚠️ やってはいけない / 注意</h2>
+<ul>
+  <li>❌ スライドを手で直して満足しない → <strong><code>rebuildAllSlides</code> で消えます</strong>。直すならシート。</li>
+  <li>❌ 音楽を<strong>2枚目以降</strong>に入れる → 作り直しで消えます。<strong>必ず表紙（1枚目）</strong>に。</li>
+  <li>❌ <code>onFormSubmit</code> を手動実行しない（自動トリガー専用）。</li>
+  <li>❌ スプレッドシートの<strong>1行目（見出し）を削除・改変しない</strong>（列の判定に使用）。</li>
+  <li>❌ サマリーを「リンクを知っている全員」で公開しない（電話番号を含むため）。</li>
+  <li>✅ 大きな作業前は、スライドファイルを<strong>「コピーを作成」でバックアップ</strong>。</li>
+</ul>
+
+<!-- 11 -->
+<h2 id="checklist">11. 本番前チェックリスト</h2>
+<ul class="check">
+  <li>スプレッドシートの申込内容が最新・正確か</li>
+  <li><code>updateStaffSummary</code> でサマリーを最新化し、スタッフ共有済みか</li>
+  <li><code>rebuildAllSlides</code> を実行した</li>
+  <li>第1部・第2部・第3部の各ファイルを開き、内容と並びを確認した</li>
+  <li>各ファイルの表紙に音楽が入り、自動再生・ループになっている</li>
+  <li>各ファイルの自動送り秒数を設定した</li>
+  <li>締めスライドが各ファイルの最後に入っている</li>
+  <li>会場PCで通し再生し、音・速度・写真表示を確認した</li>
+</ul>
+
+<div class="box info" style="margin-top:36px;">
+  困ったときは、<code>diagnoseLatestResponse</code> の実行ログを控えて開発担当に共有してください。
+</div>
+
+</div>
+</body>
+</html>
